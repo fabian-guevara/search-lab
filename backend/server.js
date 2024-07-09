@@ -57,6 +57,7 @@ app.get('/search', async (req, res) => {
     const searchResults = await productColl.aggregate([ defaultIndex, project ]).toArray();
 
     res.json({ findResults, searchResults });
+    
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

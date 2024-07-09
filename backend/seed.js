@@ -11,19 +11,22 @@ mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 
 const productSchema = new mongoose.Schema({
   name: String,
-  description: String
+  description: String,
+  price: Number,
 });
 
 const Product = mongoose.model('Product', productSchema);
 
 const products = Array.from({ length: 100 }).map(() => ({
   name: faker.commerce.productName(),
-  description: faker.commerce.productDescription()
+  description: faker.commerce.productDescription(),
+  price: faker.commerce.price({ min: 20, max: 90}),
 }));
 
 const seedDB = async () => {
   try {
     await Product.deleteMany({});
+    console.log(products);
     await Product.insertMany(products);
     console.log('Database seeded');
   } catch (error) {
