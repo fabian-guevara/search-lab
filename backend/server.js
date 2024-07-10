@@ -98,7 +98,6 @@ app.get('/also-recommend', async (req, res) => {
 
     const result = await collection.aggregate(pipeline).toArray();
 
-    console.log(result);
     res.json(result);
 
   } catch (err) {
@@ -128,7 +127,7 @@ async function createVector(data) {
       input: data,
       encoding_format: "float"
   });
-  console.log(data[0])
+  
   return response.data[0].embedding;
 }
 
