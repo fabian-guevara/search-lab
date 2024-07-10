@@ -15,7 +15,7 @@ let productColl;
 
 client.connect().then(() => {
     //get collection instance
-productColl = client.db("products").collection("products")
+    productColl = client.db("products").collection("products");
 });
 
 
@@ -57,7 +57,7 @@ app.get('/autocomplete', async (req, res) => {
 
 const defaultIndex = {
     $search: {
-      index: 'default', // Use the name of your search index if different
+      index: 'default', // index name
       text: {
         query: "",
         path: ['title', 'description'], // Search in both title and description
@@ -84,9 +84,6 @@ const defaultIndex = {
 app.get('/search', async (req, res) => {
   const query = req.query.q;
   try {
-
-    // connection to DB
-  
     
     //look for results without Atlas Search
     const findResults = await productColl.find({ title: new RegExp(query) }).toArray();
