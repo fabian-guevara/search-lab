@@ -1,11 +1,15 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require("mongodb");
-const openai = require('openai');
+const openAI = require('openai');
 const dotenv = require('dotenv');
 
 dotenv.config();
-openai.apiKey = process.env.OPENAI_KEY;
+openai_apiKey = process.env.OPENAI_KEY;
+
+const openai = new openAI.OpenAI({
+  apiKey: openai_apiKey,
+});
 
 const app = express();
 app.use(express.json());
@@ -67,5 +71,70 @@ app.get('/search', async (req, res) => {
   }
 });
 
-app.listen(5000, () => console.log('Server running on port 5000'));
+// recommendations endpoint
+app.get('/also-recommend', async (req, res) => {
+  const vector = req.query.q;
+  try {
+    const queryVector = [0.2, 0.3, 0.4]; // replace with your query vector
+
+    const pipeline = [
+        {
+            $search: {
+                "vector": {
+                    "field": "yourVectorField", // replace with your vector field
+                    "query": queryVector,
+                    "cosine": true
+                }
+            }
+        },
+        {
+            $project: {
+                "_id": 0,
+                "name": 1, // replace with your fields
+                "score": { "$meta": "searchScore" }
+            }
+        }
+    ];
+
+    const result = await collection.aggregate(pipeline).toArray();
+
+    console.log(result);
+    res.json(result);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
+app.get('/vectorize', async (req, res) => {
+  const collectionName = "catalog";
+  const collection = client.db("ecommerce").collection(collectionName);
+
+  const cursor = collection.find({});
+  while (await cursor.hasNext()) {
+      const doc = await cursor.next();
+      const vector = await createVector(doc.description); // replace with your field
+      await collection.updateOne({ _id: doc._id }, { $set: { description_embedding: vector } });
+  }
+
+  res.send('Vectorization completed');
+});
+
+async function createVector(data) {
+  console.log(data)
+  const response = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: data,
+      encoding_format: "float"
+  });
+  console.log(data[0])
+  return response.data[0].embedding;
+}
+
+
+const port = process.env.PORT;
+console.log(port);
+
+app.listen(port, () => console.log('Server running on port ' + port));
 
