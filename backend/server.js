@@ -1,14 +1,18 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient } = require("mongodb");
+const openai = require('openai');
+const dotenv = require('dotenv');
 
- 
+dotenv.config();
+openai.apiKey = process.env.OPENAI_KEY;
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 
 // Replace with your MongoDB connection string
-const uri = 'mongodb+srv://user:123@demo.lfvxb.mongodb.net/?retryWrites=true&w=majority&appName=DEMO';
+const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri);
 
