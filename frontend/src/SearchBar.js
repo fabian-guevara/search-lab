@@ -6,7 +6,8 @@ function SearchBar() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState({
     findResults: [],
-    searchResults: []
+    searchResults: [],
+    imageResults: []
   });
   const [suggestions, setSuggestions] = useState([]);
 
@@ -15,7 +16,11 @@ function SearchBar() {
       const response = await axios.get('http://localhost:5000/search', {
         params: { q: query }
       });
-      setResults(response.data);
+      setResults(prevResults => ({
+        ...prevResults,
+        searchResults: response.data.searchResults,
+        findResults: response.data.findResults
+      }));
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
@@ -44,8 +49,42 @@ function SearchBar() {
     setSuggestions([]);
   };
 
+  const handleDrop = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    console.log("FIRED!");
+
+    if (files.length > 0) {
+      const formData = new FormData();
+      formData.append('file', files[0]);
+
+      try {
+        const response = await axios.post('http://localhost:5000/image-search', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        setResults(prevResults => ({
+          ...prevResults,
+          imageResults: response.data
+        }));
+      } catch (error) {
+        console.error('Error fetching image search results:', error);
+      }
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   return (
-    <div className="search-container">
+    <div 
+      className="search-container"
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
       <div className="search-input-container">
         <input
           type="text"
@@ -98,6 +137,18 @@ function SearchBar() {
             )}
           </ul>
         </div>
+        {results.imageResults && results.imageResults.length > 0 && (
+          <div className="image-results-box">
+            <h2>Image Search Results:</h2>
+            <ul className="image-results-list">
+              {results.imageResults.map((item, index) => (
+                <li key={index}>
+                  <img src={item.image} alt={`Result ${index + 1}`} />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     </div>
   );

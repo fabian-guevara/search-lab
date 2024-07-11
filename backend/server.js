@@ -29,7 +29,7 @@ let productColl;
 
 client.connect().then(() => {
     //get collection instance
-    productColl = client.db("products").collection("products");
+    productColl = client.db("ecommerce").collection("catalog");
 });
 
 
@@ -1786,5 +1786,5 @@ app.post('/image-search', async (req, res) => {
 const port = process.env.PORT;
 console.log(port);
 
-app.listen(port, () => console.log('Server running on port ' + port));
+app.listen(5000, () => console.log('Server running on port ' + port));
 
