@@ -60,7 +60,7 @@ function SearchBar() {
       formData.append('file', files[0]);
 
       try {
-        const response = await axios.post('http://localhost:5000/image-search', formData, {
+        const response = await axios.post('http://localhost:9000/image-search', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
