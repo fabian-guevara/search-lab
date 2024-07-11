@@ -143,7 +143,10 @@ function SearchBar() {
             <ul className="image-results-list">
               {results.imageResults.map((item, index) => (
                 <li key={index}>
-                  <img src={item.image} alt={`Result ${index + 1}`} />
+                  <img src={item.image} alt={`Result ${index + 1}`} width="300px" height="500px" />
+                  <h4>{item.title}</h4>
+                  <p><b>Description: </b>{item.description}</p>
+                  <p><b>Score: </b>{item.score}</p>
                 </li>
               ))}
             </ul>
