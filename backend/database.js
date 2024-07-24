@@ -7,11 +7,12 @@ dotenv.config();
 const uri = process.env.MONGO_URI;
 
 const client = new MongoClient(uri);
-let productColl;
+
 
 client.connect().then(() => {
-    // Get collection instance
-    productColl = client.db("products").collection("products");
+   console.log("Connected to MongoDB");
+}).catch((e) => {
+    console.error("There was an error connecting to MongoDB. Error Message:", e.message)
 });
 
-module.exports = { client, productColl };
+module.exports = client;

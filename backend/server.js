@@ -8,8 +8,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const searchRoutes = require('./searchRoutes');
-const vectorSearchRoutes = require('./vectorSearchRoutes');
+const searchRoutes = require('./searchRoutes.js');
+const vectorSearchRoutes = require('./vectorSearchRoutes.js');
 
 app.use('/search', searchRoutes);
 app.use('/vector-search', vectorSearchRoutes);

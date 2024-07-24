@@ -27,7 +27,7 @@ function SearchBar() {
 
     if (value.length > 2) {
       try {
-        const response = await axios.get('http://localhost:5000/autocomplete', {
+        const response = await axios.get('http://localhost:5000/search/autocomplete', {
           params: { q: value }
         });
         setSuggestions(response.data);

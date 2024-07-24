@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { client } = require('./database'); // Import the MongoDB client from a database file
+const { client } = require('./database.js'); // Import the MongoDB client from a database file
 const openAI = require('openai');
 const dotenv = require('dotenv');
 
