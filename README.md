@@ -68,11 +68,13 @@ cd text-vector-search-lab
 npm install
 ```
 
-3. Set up your MongoDB Atlas connection string and OpenAI API key in a `.env` file:
+3. Set up your  `.env` file at the backend folder level:
 
 ```bash
 MONGO_URI=mongodb+srv://<username>:<password>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority
 OPENAI_API_KEY=your_openai_api_key
+PORT=9000
+CLIP_EMBEDDER_URL=http://localhost:<port>
 ```
 
 ### Running the Lab
@@ -90,7 +92,15 @@ npm run start:backend
 npm run start:frontend
 ```
 
-4. Follow the instructions in the `notebooks` directory to run the text and vector search examples.
+4. Start the image vectorizer , all credits due to [Pat Wendorf](https://github.com/patw/ImageVectorizer)  
+```bash 
+cd vectorizer 
+python -m venv myenv
+source  myenv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 3001 --reload
+```
+
 5. Explore the `scripts` directory for additional functionalities and extensions.
 
 ## Dataset
