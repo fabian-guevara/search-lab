@@ -1,3 +1,5 @@
+const { Model } = require("mongoose");
+
 const queryVector = [
     0.058561474,
     0.002560881,
@@ -1536,3 +1538,5 @@ const queryVector = [
     -0.017315166,
     -0.0025756753
   ]; // replace with your query vector
+
+module.exports = queryVector;

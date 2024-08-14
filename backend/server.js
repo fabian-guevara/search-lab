@@ -5,6 +5,7 @@ const axios = require('axios');
 const fs = require('fs');
 const fileUpload = require('express-fileupload');
 const multer = require('multer');
+const openAI = require('openai');
 
 dotenv.config();
 openai_apiKey = process.env.OPENAI_KEY;
@@ -34,4 +35,6 @@ app.use('/search', searchRoutes);
 app.use('/vector-search', vectorSearchRoutes);
 
 const port = process.env.PORT;
+//export multer object to be used in vectorSearchRoutes.js
+module.exports = upload;
 app.listen(port, () => console.log('Server running on port ' + port));

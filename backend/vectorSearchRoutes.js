@@ -1,24 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { client } = require('./database.js'); // Import the MongoDB client from a database file
+const client = require('./database.js'); // Import the MongoDB client from a database file
 const openAI = require('openai');
 const dotenv = require('dotenv');
+const samplevector = require('./queryVector.js');
 
-dotenv.config();
-const openai_apiKey = process.env.OPENAI_KEY;
-
-const openai = new openAI.OpenAI({
-    apiKey: openai_apiKey,
-});
-
-const upload = multer({'dest':"uploads/"})
-
-
+const collection = client.db("ecommerce").collection("catalog");
 // Recommendations endpoint
 router.get('/also-recommend', async (req, res) => {
-    const vector = req.query.q;
+    //const vector = req.query.q;
+    const vector = samplevector;
     try {
-        const collection = client.db("ecommerce").collection("catalog");
         const pipeline = [
             {
                 $vectorSearch: {
@@ -34,12 +26,11 @@ router.get('/also-recommend', async (req, res) => {
         const result = await collection.aggregate(pipeline).toArray();
         res.json(result);
     } catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ message: err.message ,scope:"VS"});
     }
 });
 
 router.get('/vectorize', async (req, res) => {
-    const collection = client.db("ecommerce").collection("catalog");
     const cursor = collection.find({});
     while (await cursor.hasNext()) {
         const doc = await cursor.next();
@@ -58,7 +49,7 @@ async function createVector(data) {
     return response.data[0].embedding;
 }
 
-router.get('/image-search', async (req, res) => {
+router.post('/image-search', async (req, res) => {
     const vector = req.query.q;
     try {
         const collection = client.db("ecommerce").collection("catalog");
