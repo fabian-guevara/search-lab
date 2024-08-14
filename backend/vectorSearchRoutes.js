@@ -4,6 +4,8 @@ const client = require('./database.js'); // Import the MongoDB client from a dat
 const openAI = require('openai');
 const dotenv = require('dotenv');
 const samplevector = require('./queryVector.js');
+const fs = require('fs');
+const axios = require('axios');
 
 const collection = client.db("ecommerce").collection("catalog");
 // Recommendations endpoint
@@ -49,27 +51,72 @@ async function createVector(data) {
     return response.data[0].embedding;
 }
 
+async function imageEmbbeding(image) {
+  try {
+    // Write the image to a temporary file
+    await fs.promises.writeFile("./tempImage.jpeg", image);
+
+    // Read the file and create a Blob
+    const data = await fs.promises.readFile("./tempImage.jpeg");
+    const file = new Blob([data], { type: "image/jpeg" });
+
+    // Create FormData and append the file
+    const formData = new FormData();
+    formData.append('image', file, "image.jpeg");
+
+    // Make the request
+    const response = await axios.post(`${clip_embedder_url}/upload_image_vector`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'content-type': 'image/jpeg'
+      }
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading image to vector:', error);
+  }
+}
+
 router.post('/image-search', async (req, res) => {
-    const vector = req.query.q;
-    try {
-        const collection = client.db("ecommerce").collection("catalog");
-        const pipeline = [
-            {
-                $vectorSearch: {
-                    index: "vector_image",
-                    path: "image_embedding",
-                    queryVector: vector,
-                    numCandidates: 3,
-                    limit: 2
-                }
-            },
-            { '$project': { _id: 0, title: 1, description: 1, score: { $meta: "vectorSearchScore" } } }
-        ];
-        const result = await collection.aggregate(pipeline).toArray();
-        res.json(result);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
+  console.log(req);
+  const image = req.files.file.data;
+ 
+  const imageVector = await imageEmbbeding(image);
+  try {
+    const collectionName = "catalog";
+    const collection = client.db("ecommerce").collection(collectionName);
+    const pipeline = [
+      {
+        $vectorSearch: {
+          index: "vector_imege3", 
+          //path: "vector", 
+          path: "image_embedding3", 
+          queryVector:imageVector, 
+          numCandidates: 3, 
+          limit: 2
+        }
+      }, {
+        '$project': {
+          _id: 0, 
+          title: 1, 
+          description: 1, 
+          image: 1,
+          score: {
+            $meta: "vectorSearchScore"
+          }
+        }
+      }
+    ];
+
+    const result = await collection.aggregate(pipeline).toArray();
+
+    res.json(result);
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;
