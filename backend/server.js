@@ -1,7 +1,5 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient } = require("mongodb");
-const openAI = require('openai');
 const dotenv = require('dotenv');
 const axios = require('axios');
 const fs = require('fs');
@@ -9,12 +7,15 @@ const fileUpload = require('express-fileupload');
 const multer = require('multer');
 
 dotenv.config();
+<<<<<<< HEAD
 openai_apiKey = process.env.OPENAI_KEY;
 clip_embedder_url = process.env.CLIP_EMBEDDER_URL; 
 
 const openai = new openAI.OpenAI({
   apiKey: openai_apiKey,
 });
+=======
+>>>>>>> cleanup
 
 
 const app = express();
@@ -29,6 +30,7 @@ app.use((req, res, next) => {
 
 const upload = multer({'dest':"uploads/"})
 
+<<<<<<< HEAD
 // Replace with your MongoDB connection string
 const uri = process.env.MONGO_URI;
 
@@ -1856,10 +1858,18 @@ app.get('/hybrid-search', async (req, res) => {
   }
 });
 */
+=======
+const searchRoutes = require('./searchRoutes.js');
+const vectorSearchRoutes = require('./vectorSearchRoutes.js');
+
+app.use('/search', searchRoutes);
+app.use('/vector-search', vectorSearchRoutes);
+>>>>>>> cleanup
 
 const port = process.env.PORT;
-console.log(port);
-
 app.listen(port, () => console.log('Server running on port ' + port));
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> cleanup
