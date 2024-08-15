@@ -4,7 +4,7 @@ const { MongoClient } = require("mongodb");
 const uri = 'mongodb+srv://user:123@demo.lfvxb.mongodb.net/?retryWrites=true&w=majority&appName=DEMO';
 
 
-const client = new MongoClient(uri);
+const client = new MongoClient(process.env.MONGODB_URI);
 
 
 fetch('https://fakestoreapi.com/products/')
@@ -12,6 +12,7 @@ fetch('https://fakestoreapi.com/products/')
             .then(async json=>{
                 await client.connect()
                     client.db("products").collection("products").insertMany(json)
-            })
+                    console.log("Data seeded");
+})
 
 
