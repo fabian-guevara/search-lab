@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const client = require('./database.js'); // Import the productColl from a database file
+    const client = require('./database.js'); // Import the productColl from a database file
 
 const productColl =client.db("products").collection("products");
 
