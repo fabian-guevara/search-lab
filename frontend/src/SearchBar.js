@@ -1,6 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Facets from "./Facets.js";
 import './SearchBar.css';
+
+
+
+const getFacetResults = async () => {
+  try {
+    const response = await axios.get('http://localhost:5000/search');
+    return response.data;
+  } catch (error) { 
+    console.error('Error fetching facet results:', error);
+  }
+};
 
 function SearchBar() {
   const [query, setQuery] = useState('');
@@ -10,10 +22,20 @@ function SearchBar() {
     imageResults: []
   });
   const [suggestions, setSuggestions] = useState([]);
+  const [facetResults, setFacetResults] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const results = await getFacetResults();
+      setFacetResults(results); // Set state with the resolved data
+    };
+
+    fetchData(); // Call the async function
+  }, []);
 
   const handleSearch = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/search', {
+      const response = await axios.get('http://localhost:5000/search/search', {
         params: { q: query }
       });
       setResults(prevResults => ({
@@ -21,6 +43,7 @@ function SearchBar() {
         searchResults: response.data.searchResults,
         findResults: response.data.findResults
       }));
+      setFacetResults(response.data.facets);
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
@@ -80,11 +103,14 @@ function SearchBar() {
   };
 
   return (
+   <div className='main'>
+     <Facets facetResults={facetResults} />
     <div 
       className="search-container"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
+      
       <div className="search-input-container">
         <input
           type="text"
@@ -154,6 +180,7 @@ function SearchBar() {
         )}
       </div>
     </div>
+   </div>
   );
 }
 
